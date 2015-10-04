@@ -12,7 +12,7 @@ package 'rsync'
 directories = node['rsynced']['directories'].join(' ')
 destination = "#{node['rsynced']['dest_host']}:#{node['rsynced']['dest_dir']}/"
 delete = '--delete' if node['rsynced']['delete_remote']
-exlude = '--exclude=".*"'
+exclude = '--exclude=".*"'
 # TODO: Support generating identity file and installing it on the server.
 # TODO: Implement monitoring mechanism
 

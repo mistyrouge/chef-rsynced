@@ -1,3 +1,8 @@
+Need to add the admin flag on the client so it's able to push it's ssh key
+$ knife client edit CLIENT
+
+
+
 rsynced Cookbook
 ================
 TODO: Enter the cookbook description here.
