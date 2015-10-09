@@ -10,6 +10,10 @@ username = node['rsynced']['client']['user']
 unless username
     Chef::Application.fatal!("You need to specify a user to use for rsync.")
 end
+directories = node['rsynced']['client']['directories'].join(' ')
+unless directories
+    Chef::Application.fatal!("You need to specify directories to backup.")
+end
 target_name = node['rsynced']['client']['target']
 unless target_name
     Chef::Application.fatal!("You need to specify a target node to backup to.")
@@ -81,22 +85,16 @@ unless address
     Chef::Application.fatal!("Couldn't find ipv6 address for `#{target_host}`")
 end
 
-puts "@@@@@@@@@@@@@@@@@@@@@@@@@"
-puts address
-puts "@@@@@@@@@@@@@@@@@@@@@@@@@"
-
 
 # Set up rsync cron
-directories = node['rsynced']['client']['directories'].join(' ')
-destination = "#{node['rsynced']['client']['dest_host']}:#{node['rsynced']['client']['dest_dir']}/"
-delete = '--delete'
-exclude = '--exclude=".*"'
-
+nice = "/usr/bin/nice -n 19"
+ionice = "/usr/bin/ionice -c2 -n7"
+rsync = "/usr/bin/rsync -azH --exclude=\".*\" --delete"
 cron 'install backup cron' do
     minute  node['rsynced']['client']['minute']
     hour    node['rsynced']['client']['hour']
     weekday node['rsynced']['client']['weekday']
     mailto  user['email'] if user['email']
     user    username
-    command "rsync -azH #{directories} #{destination} #{exclude} #{delete}"
+    command "#{nice} #{ionice} #{rsync} #{directories} [#{address}]:data/"
 end
