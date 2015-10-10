@@ -39,12 +39,17 @@ else
     sshkey = SSHKey.generate(type: 'RSA', comment: "#{username}'s backup")
     pubkey = sshkey.ssh_public_key
 
+    group user['groups'][0] do
+        action :create
+        members user['id']
+        append true
+    end
     directory "/home/#{username}/.ssh" do
         owner user['id']
         group user['groups'][0]
         mode 00700
     end
-    file "/home/#{username}/.ssh/id_rsa_rsynced" do
+    file keypath do
         content sshkey.private_key
         mode '0600'
         owner user['id']
@@ -68,6 +73,7 @@ cli = [
 ].join(',')
 
 entry = "#{cli} #{pubkey}"
+user['ssh_keys'] = [] unless user['ssh_keys']
 user['ssh_keys'].push(entry) unless user['ssh_keys'].include? entry
 user.save
 
@@ -90,11 +96,12 @@ end
 nice = "/usr/bin/nice -n 19"
 ionice = "/usr/bin/ionice -c2 -n7"
 rsync = "/usr/bin/rsync -azH --exclude=\".*\" --delete"
+ssh = "-e 'ssh -i #{keypath}'"
 cron 'install backup cron' do
     minute  node['rsynced']['client']['minute']
     hour    node['rsynced']['client']['hour']
     weekday node['rsynced']['client']['weekday']
     mailto  user['email'] if user['email']
     user    username
-    command "#{nice} #{ionice} #{rsync} #{directories} [#{address}]:data/"
+    command "#{nice} #{ionice} #{rsync} #{ssh} #{directories} [#{address}]:data/"
 end

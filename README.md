@@ -1,6 +1,5 @@
-Need to add the admin flag on the client so it's able to push it's ssh key
-$ knife client edit CLIENT
-
+The users databag needs to be editable by all clients.
+Each users/user data bag entry needs to have a ssh_keys array
 
 
 rsynced Cookbook
