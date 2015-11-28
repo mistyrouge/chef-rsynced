@@ -64,7 +64,7 @@ end
 
 # Push public key to chef
 cli = [
-    "command=\"/usr/local/bin/rrsync -ro ~/\"",
+    "command=\"/usr/local/bin/rrsync ~/\"",
     "no-agent-forwarding",
     "no-port-forwarding",
     "no-pty",
