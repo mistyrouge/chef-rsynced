@@ -93,6 +93,7 @@ end
 
 
 # Set up rsync cron
+idempotence = "pgrep rsync ||"
 nice = "/usr/bin/nice -n 19"
 ionice = "/usr/bin/ionice -c2 -n7"
 rsync = "/usr/bin/rsync -azH --exclude=\".*\" --delete"
@@ -103,5 +104,5 @@ cron 'install backup cron' do
     weekday node['rsynced']['client']['weekday']
     mailto  user['email'] if user['email']
     user    username
-    command "#{nice} #{ionice} #{rsync} #{ssh} #{directories} [#{address}]:data/"
+    command "#{idempotence} #{nice} #{ionice} #{rsync} #{ssh} #{directories} [#{address}]:data/"
 end
