@@ -5,6 +5,13 @@
 # All rights reserved - Do Not Redistribute
 #
 
+
+# LIMITATIONS / TODO
+# * We should allow multiple user per machine
+# * User data bag should be created if it doesn't exist
+# * Should have a dedicated group for users running the backups.
+
+
 # Check inputs
 username = node['rsynced']['client']['user']
 unless username
@@ -71,7 +78,6 @@ cli = [
     "no-user-rc",
     "no-X11-forwarding",
 ].join(',')
-
 entry = "#{cli} #{pubkey}"
 user['ssh_keys'] = [] unless user['ssh_keys']
 user['ssh_keys'].push(entry) unless user['ssh_keys'].include? entry
